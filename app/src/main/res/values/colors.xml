@@ -1,22 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background">#fcfcfd</color>
-    <color name="background_secondary">#f0f0f5</color>
-    <color name="background_toolbar">@color/background_secondary</color>
-    <color name="primary">#6677b2</color>
-    <color name="primary_variant">#7786bb</color>
-    <color name="secondary">#888faa</color>
-    <color name="secondary_variant">#979db5</color>
-    <color name="accent">#abb7d3</color>
-    <color name="accent_variant">#9ba9ca</color>
-    <color name="foreground">#F8F9FC</color>
-    <color name="foreground_alpha">#AFF8F8FC</color>
-    <color name="text">#212122</color>
-    <color name="btn_text">#DADCE3</color>
-    <color name="inactive">#232427</color>
-    <color name="active">#0026AE</color>
+    <!-- M3 calm palette (light) -->
+    <color name="primary">#41528E</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#DBE2FF</color>
+    <color name="on_primary_container">#12193F</color>
 
-    <color name="current_lesson">#31000000</color>
+    <color name="secondary">#596171</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#DFE3F7</color>
+    <color name="on_secondary_container">#171C2E</color>
 
-    <color name="active_indicator">@color/material_dynamic_tertiary90</color>
+    <color name="tertiary">#7653A6</color>
+    <color name="on_tertiary">#FFFFFF</color>
+    <color name="tertiary_container">#E7E0FF</color>
+    <color name="on_tertiary_container">#25123C</color>
+
+    <color name="error">#B3261E</color>
+    <color name="on_error">#FFFFFF</color>
+    <color name="error_container">#F9DEDC</color>
+    <color name="on_error_container">#410E0B</color>
+
+    <color name="background">#FAF9FD</color>
+    <color name="on_background">#1B1B1F</color>
+    <color name="surface">#FAF9FD</color>
+    <color name="on_surface">#1B1B1F</color>
+    <color name="surface_variant">#E5E1EC</color>
+    <color name="on_surface_variant">#49454F</color>
+    <color name="outline">#79747E</color>
+    <color name="outline_variant">#C7C2D0</color>
+
+    <!-- Material 3 surface container roles (light) -->
+    <color name="surface_container_lowest">#FFFFFF</color>
+    <color name="surface_container_low">#F7F2FA</color>
+    <color name="surface_container">#F3EDF7</color>
+    <color name="surface_container_high">#ECEAEE</color>
+    <color name="surface_container_highest">#E6E0E9</color>
+    <color name="surface_tint">@color/primary</color>
+
+    <!-- Legacy aliases used across layouts -->
+    <color name="background_secondary">@color/surface_variant</color>
+    <color name="background_toolbar">@color/surface_variant</color>
+    <color name="primary_variant">@color/primary_container</color>
+    <color name="accent">@color/tertiary</color>
+    <color name="accent_variant">@color/on_secondary</color>
+    <color name="foreground">@color/surface</color>
+    <color name="foreground_alpha">#AFFAF9FD</color>
+    <color name="text">@color/on_surface</color>
+    <color name="btn_text">@color/on_primary</color>
+    <color name="inactive">@color/on_surface_variant</color>
+    <color name="active">@color/primary</color>
+
+    <color name="current_lesson">#3141528E</color>
+
+    <color name="lesson_cancelled">#1FB3261E</color>
+    <color name="lesson_changed">#1F7653A6</color>
+    <color name="lesson_note_text">#5F5F66</color>
+
+    <color name="active_indicator">@color/tertiary_container</color>
+
+    <!-- Day card load indicators -->
+    <color name="day_load_low">#2E7D32</color>
+    <color name="day_load_medium">#B98A00</color>
+    <color name="day_load_high">#C62828</color>
+
+    <!-- OLED (forced dark) palette -->
+    <color name="oled_background">#000000</color>
+    <color name="oled_on_background">#E6E1E5</color>
+    <color name="oled_surface">#000000</color>
+    <color name="oled_on_surface">#E6E1E5</color>
+    <color name="oled_surface_variant">#0E0E10</color>
+    <color name="oled_on_surface_variant">#CAC4D0</color>
+    <color name="oled_outline">#938F99</color>
+    <color name="oled_primary">#AEBFF5</color>
+    <color name="oled_on_primary">#172653</color>
+    <color name="oled_primary_container">#33457C</color>
+    <color name="oled_on_primary_container">#DBE2FF</color>
+    <color name="oled_secondary">#C3C8DB</color>
+    <color name="oled_on_secondary">#272C3E</color>
+    <color name="oled_secondary_container">#40465C</color>
+    <color name="oled_on_secondary_container">#DFE3F7</color>
+    <color name="oled_tertiary">#CFC0F5</color>
+    <color name="oled_on_tertiary">#2A1C4D</color>
+    <color name="oled_tertiary_container">#574884</color>
+    <color name="oled_on_tertiary_container">#E7E0FF</color>
+    <color name="oled_error">#F2B8B5</color>
+    <color name="oled_on_error">#601410</color>
+    <color name="oled_error_container">#8C1D18</color>
+    <color name="oled_on_error_container">#F9DEDC</color>
 </resources>

@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Widget.Theme.KTC.ButtonBar.Fullscreen" parent="">
-        <item name="android:background">@color/background</item>
-        <item name="android:buttonBarStyle">?android:buttonBarStyle</item>
-    </style>
-
-    <style name="Theme.KTC.FullScreenDialog" parent="Theme.KTC">
-        <item name="colorPrimaryDark">?colorPrimaryDark</item>
-        <item name="colorAccent">?colorAccent</item>
-        <item name="colorPrimary">?colorPrimary</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowBackground">@color/background</item>
-        <item name="actionMenuTextColor">?colorAccent</item>
-    </style>
-
     <style name="Widget.KTC.AppWidget.Container" parent="android:Widget">
         <item name="android:id">@android:id/background</item>
         <item name="android:background">@color/background</item>
@@ -25,19 +11,6 @@
         <item name="android:textColor">@color/primary</item>
     </style>
 
-    <style name="Theme.KTC.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.KTC.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="background">@color/background_secondary</item>
-    </style>
-
-    <style name="Theme.KTC.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:textColorSecondary">?titleTextColor</item>
-    </style>
-
     <style name="Theme.KTC.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault">
         <item name="appWidgetRadius">16dp</item>
         <item name="appWidgetInnerRadius">8dp</item>
@@ -45,10 +18,5 @@
 
     <style name="Theme.KTC.AppWidgetContainer" parent="Theme.KTC.AppWidgetContainerParent">
         <item name="appWidgetPadding">16dp</item>
-    </style>
-
-    <style name="roundedImageView">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
     </style>
 </resources>

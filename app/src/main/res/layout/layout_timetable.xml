@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/shape_background_secondary"
-    android:elevation="8sp"
+    android:elevation="1dp"
     android:orientation="vertical"
     tools:layout_editor_absoluteX="8dp"
     tools:layout_editor_absoluteY="9dp">
@@ -13,45 +13,35 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/day_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp">
+
+        <View
+            android:id="@+id/day_load_indicator"
+            android:layout_width="32dp"
+            android:layout_height="6dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/shape_day_indicator"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/day_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:text="@string/news_date"
-            android:textSize="16sp"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="?attr/colorOnSurface"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <LinearLayout
-            android:id="@+id/hr_right"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@color/text"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/day_header"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/day_header"
-            app:layout_constraintTop_toTopOf="@+id/day_header" />
-
-        <LinearLayout
-            android:id="@+id/hr_left"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@color/text"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/day_header"
-            app:layout_constraintEnd_toStartOf="@+id/day_header"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/day_header">
-        </LinearLayout>
-
+            app:layout_constraintTop_toBottomOf="@id/day_load_indicator" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

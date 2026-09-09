@@ -5,93 +5,121 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp"
-    tools:layout_editor_absoluteX="8dp"
-    tools:layout_editor_absoluteY="9dp">
+    android:paddingTop="8dp"
+    android:paddingBottom="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/lesson_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:gravity="center"
-            android:lineSpacingExtra="-4sp"
-            android:padding="0dp"
-            android:text="@string/lesson_title"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/lesson_classroom"
-            app:layout_constraintStart_toEndOf="@+id/hr_time"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/lesson_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/lesson_number"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/lesson_teacher"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/lesson_title" />
-
-        <TextView
-            android:id="@+id/lesson_to"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lesson_time"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/hr_time"
-            app:layout_constraintStart_toStartOf="@+id/hr_time"
-            app:layout_constraintTop_toBottomOf="@+id/lesson_from" />
-
-        <TextView
-            android:id="@+id/lesson_from"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lesson_time"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/hr_time"
-            app:layout_constraintEnd_toEndOf="@+id/hr_time"
-            app:layout_constraintStart_toStartOf="@+id/hr_time" />
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <LinearLayout
-            android:id="@+id/hr_time"
-            android:layout_width="40dp"
-            android:layout_height="1dp"
-            android:layout_marginStart="2dp"
-            android:background="@color/text"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/lesson_number"
-            app:layout_constraintStart_toEndOf="@+id/lesson_number"
-            app:layout_constraintTop_toTopOf="@+id/lesson_number" />
+            android:id="@+id/time_column"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/lesson_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lesson_number"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lesson_from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/lesson_time"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:id="@+id/lesson_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lesson_time"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/time_column"
+            app:layout_constraintEnd_toStartOf="@id/lesson_classroom"
+            app:layout_constraintStart_toEndOf="@id/time_column"
+            app:layout_constraintTop_toTopOf="@id/time_column">
+
+            <TextView
+                android:id="@+id/lesson_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@string/lesson_title"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lesson_teacher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@string/lesson_teacher"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/lesson_classroom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:background="@drawable/shape_chip_outline"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
             android:text="@string/lesson_classroom"
-            app:layout_constraintBottom_toBottomOf="@+id/lesson_from"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintBottom_toBottomOf="@id/time_column"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/lesson_to" />
-
-        <TextView
-            android:id="@+id/lesson_teacher"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="0dp"
-            android:text="@string/lesson_teacher"
-            app:layout_constraintEnd_toEndOf="@+id/lesson_title"
-            app:layout_constraintStart_toStartOf="@+id/lesson_title"
-            app:layout_constraintTop_toBottomOf="@+id/lesson_title" />
-
+            app:layout_constraintTop_toTopOf="@id/time_column" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/lesson_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="@color/lesson_note_text"
+        android:visibility="gone"
+        tools:text="Примечание"
+        tools:visibility="visible" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/colorOutlineVariant" />
 </LinearLayout>

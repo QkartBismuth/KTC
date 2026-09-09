@@ -1,62 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.KTC" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.KTC" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_variant</item>
-        <item name="colorPrimaryVariant">@color/accent</item>
-        <item name="colorOnPrimary">@color/accent_variant</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
 
         <item name="colorSecondary">@color/secondary</item>
-        <item name="colorSecondaryVariant">@color/secondary_variant</item>
-        <item name="colorOnSecondary">@color/accent</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="colorSecondaryContainer">@color/secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/on_secondary_container</item>
 
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
-        <item name="android:colorAccent">@color/accent</item>
+        <item name="colorTertiary">@color/tertiary</item>
+        <item name="colorOnTertiary">@color/on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/on_tertiary_container</item>
+
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/on_error</item>
+        <item name="colorErrorContainer">@color/error_container</item>
+        <item name="colorOnErrorContainer">@color/on_error_container</item>
+
+        <item name="android:statusBarColor" tools:targetApi="l">@color/surface</item>
+        <item name="android:navigationBarColor">@color/surface</item>
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:textColorLink">@color/primary_variant</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:textColorLink">@color/tertiary</item>
 
-        <item name="fontFamily">@font/nuritom</item>
-        <item name="android:buttonStyle">@style/Widget.MaterialComponents.Button</item>
-
-        <item name="android:textColorPrimary">@color/btn_text</item>
+        <item name="android:textColorPrimary">@color/text</item>
         <item name="android:textColor">@color/text</item>
-        <item name="colorAccent">?attr/colorPrimary</item>
+        <item name="colorAccent">@color/tertiary</item>
         <item name="android:textColorSecondary">@color/inactive</item>
-        <item name="cardBackgroundColor">@color/background_secondary</item>
+        <item name="cardBackgroundColor">@color/surface_container</item>
+
+        <!-- Material 3 surface container roles -->
+        <item name="colorSurfaceContainerLowest">@color/surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/surface_container_highest</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorSurfaceVariant">@color/surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorOutlineVariant">@color/outline_variant</item>
 
         <item name="tickColorInactive">@color/inactive</item>
-        <item name="tickColorActive">@color/active</item>
+        <item name="tickColorActive">@color/primary</item>
         <item name="titleTextColor">@color/text</item>
     </style>
 
+    <style name="Theme.KTC.Dynamic" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 
-    <style name="Theme.KTC.MaterialYou" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/material_dynamic_primary50</item>
-        <item name="colorPrimaryDark">@color/material_dynamic_primary40</item>
-        <item name="colorPrimaryVariant">@color/material_dynamic_primary30</item>
-        <item name="colorOnPrimary">@color/material_dynamic_primary60</item>
+    <style name="Theme.KTC.Oled" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/oled_primary</item>
+        <item name="colorOnPrimary">@color/oled_on_primary</item>
+        <item name="colorPrimaryContainer">@color/oled_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/oled_on_primary_container</item>
 
-        <item name="colorSecondary">@color/material_dynamic_secondary50</item>
-        <item name="colorSecondaryContainer">@color/material_dynamic_secondary40</item>
-        <item name="colorSecondaryVariant">@color/material_dynamic_secondary30</item>
-        <item name="colorOnSecondary">@color/material_dynamic_secondary60</item>
+        <item name="colorSecondary">@color/oled_secondary</item>
+        <item name="colorOnSecondary">@color/oled_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/oled_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/oled_on_secondary_container</item>
 
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
-        <item name="android:colorAccent">@color/material_dynamic_tertiary30</item>
-        <item name="android:windowBackground">@color/material_dynamic_neutral99</item>
-        <item name="android:textColorLink">@color/material_dynamic_tertiary50</item>
+        <item name="colorTertiary">@color/oled_tertiary</item>
+        <item name="colorOnTertiary">@color/oled_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/oled_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/oled_on_tertiary_container</item>
 
-        <item name="fontFamily">@font/nuritom</item>
-        <item name="android:buttonStyle">@style/Widget.MaterialComponents.Button</item>
+        <item name="colorError">@color/oled_error</item>
+        <item name="colorOnError">@color/oled_on_error</item>
+        <item name="colorErrorContainer">@color/oled_error_container</item>
+        <item name="colorOnErrorContainer">@color/oled_on_error_container</item>
 
-        <item name="android:textColorPrimary">@color/material_dynamic_neutral_variant70</item>
-        <item name="android:textColor">@color/material_dynamic_neutral_variant20</item>
-        <item name="colorAccent">?attr/colorPrimary</item>
-        <item name="android:textColorSecondary">@color/material_dynamic_neutral_variant20</item>
-        <item name="cardBackgroundColor">@color/material_dynamic_neutral95</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/oled_background</item>
+        <item name="android:navigationBarColor">@color/oled_background</item>
+        <item name="android:windowBackground">@color/oled_background</item>
+        <item name="android:textColorLink">@color/oled_tertiary</item>
 
-        <item name="tickColorInactive">@color/material_dynamic_neutral_variant20</item>
-        <item name="tickColorActive">@color/material_dynamic_tertiary40</item>
-        <item name="titleTextColor">@color/material_dynamic_neutral_variant20</item>
+        <item name="android:textColorPrimary">@color/oled_on_surface</item>
+        <item name="android:textColor">@color/oled_on_surface</item>
+        <item name="colorAccent">@color/oled_tertiary</item>
+        <item name="android:textColorSecondary">@color/oled_on_surface_variant</item>
+        <item name="cardBackgroundColor">@color/oled_surface_variant</item>
+
+        <!-- Material 3 surface container roles (pure black surfaces) -->
+        <item name="colorSurfaceContainerLowest">@color/oled_surface_variant</item>
+        <item name="colorSurfaceContainerLow">@color/oled_surface_variant</item>
+        <item name="colorSurfaceContainer">@color/oled_surface_variant</item>
+        <item name="colorSurfaceContainerHigh">@color/oled_surface_variant</item>
+        <item name="colorSurfaceContainerHighest">@color/oled_surface_variant</item>
+        <item name="colorSurface">@color/oled_surface</item>
+        <item name="colorOnSurface">@color/oled_on_surface</item>
+        <item name="colorSurfaceVariant">@color/oled_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/oled_on_surface_variant</item>
+        <item name="colorOutline">@color/oled_outline</item>
+
+        <item name="tickColorInactive">@color/oled_on_surface_variant</item>
+        <item name="tickColorActive">@color/oled_primary</item>
+        <item name="titleTextColor">@color/oled_on_surface</item>
     </style>
 </resources>

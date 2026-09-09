@@ -1,22 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background">#0d0317</color>
-    <color name="background_secondary">#19062d</color>
-    <color name="background_toolbar">@color/background_secondary</color>
-    <color name="primary">#cda9ef</color>
-    <color name="primary_variant">#dabef3</color>
-    <color name="secondary">#472b54</color>
-    <color name="secondary_variant">#553465</color>
-    <color name="accent">#363168</color>
-    <color name="accent_variant">#3e3979</color>
-    <color name="foreground">#212121</color>
-    <color name="foreground_alpha">#95212121</color>
-    <color name="text">#DADFE3</color>
-    <color name="btn_text">#2F1D38</color>
-    <color name="inactive">#b4bcca</color>
-    <color name="active">#D7BBF2</color>
+    <!-- M3 calm palette (dark) -->
+    <color name="primary">#AEBFF5</color>
+    <color name="on_primary">#172653</color>
+    <color name="primary_container">#33457C</color>
+    <color name="on_primary_container">#DBE2FF</color>
 
-    <color name="current_lesson">#3EFFFFFF</color>
+    <color name="secondary">#C3C8DB</color>
+    <color name="on_secondary">#272C3E</color>
+    <color name="secondary_container">#40465C</color>
+    <color name="on_secondary_container">#DFE3F7</color>
 
-    <color name="active_indicator">@color/material_dynamic_neutral_variant50</color>
+    <color name="tertiary">#CFC0F5</color>
+    <color name="on_tertiary">#2A1C4D</color>
+    <color name="tertiary_container">#574884</color>
+    <color name="on_tertiary_container">#E7E0FF</color>
+
+    <color name="error">#F2B8B5</color>
+    <color name="on_error">#601410</color>
+    <color name="error_container">#8C1D18</color>
+    <color name="on_error_container">#F9DEDC</color>
+
+    <color name="background">#141218</color>
+    <color name="on_background">#E6E1E5</color>
+    <color name="surface">#141218</color>
+    <color name="on_surface">#E6E1E5</color>
+    <color name="surface_variant">#49454F</color>
+    <color name="on_surface_variant">#CAC4D0</color>
+    <color name="outline">#938F99</color>
+    <color name="outline_variant">#49454F</color>
+
+    <!-- Material 3 surface container roles (dark) -->
+    <color name="surface_container_lowest">#0F0D13</color>
+    <color name="surface_container_low">#1A181E</color>
+    <color name="surface_container">#211F26</color>
+    <color name="surface_container_high">#2B2930</color>
+    <color name="surface_container_highest">#36343B</color>
+    <color name="surface_tint">@color/primary</color>
+
+    <!-- Legacy aliases used across layouts -->
+    <color name="background_secondary">@color/surface_variant</color>
+    <color name="background_toolbar">@color/surface_variant</color>
+    <color name="primary_variant">@color/primary_container</color>
+    <color name="accent">@color/tertiary</color>
+    <color name="accent_variant">@color/on_secondary</color>
+    <color name="foreground">@color/surface</color>
+    <color name="foreground_alpha">#AF141218</color>
+    <color name="text">@color/on_surface</color>
+    <color name="btn_text">@color/on_primary</color>
+    <color name="inactive">@color/on_surface_variant</color>
+    <color name="active">@color/primary</color>
+
+    <color name="current_lesson">#3EAEBFF5</color>
+
+    <color name="lesson_cancelled">#26F2B8B5</color>
+    <color name="lesson_changed">#26CFC0F5</color>
+    <color name="lesson_note_text">#A1A1AA</color>
+
+    <color name="active_indicator">@color/tertiary_container</color>
+
+    <!-- Day card load indicators -->
+    <color name="day_load_low">#81C784</color>
+    <color name="day_load_medium">#FFD54F</color>
+    <color name="day_load_high">#EF9A9A</color>
 </resources>
