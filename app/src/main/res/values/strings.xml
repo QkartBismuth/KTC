@@ -6,10 +6,17 @@
     <string name="teachers_title">Teachers</string>
     <string name="teacher_tab">Teachers</string>
     <string name="classrooms_title">Classrooms</string>
-    <string name="classroom_day">Today: %1$s</string>
+    <string name="classroom_day">Today · %1$s</string>
+    <string name="classroom_day_today">Today · %1$s</string>
+    <string name="classroom_day_tomorrow">Tomorrow · %1$s</string>
+    <string name="classroom_day_yesterday">Yesterday · %1$s</string>
+    <string name="classroom_day_other">%1$s</string>
+    <string name="classroom_previous_day">Previous day</string>
+    <string name="classroom_next_day">Next day</string>
     <string name="classroom_loading">Loading college timetable…</string>
     <string name="classroom_not_found">No lessons today</string>
-    <string name="classroom_lesson_count">Today: %1$d</string>
+    <string name="classroom_not_found_day">No lessons on this day</string>
+    <string name="classroom_lesson_count">Lessons: %1$d</string>
     <string name="course_number">Course %1$d</string>
 
     <string name="back_button">Back</string>

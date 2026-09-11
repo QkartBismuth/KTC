@@ -8,9 +8,16 @@
     <string name="teacher_tab">Преподаватели</string>
     <string name="classrooms_title">Кабинеты</string>
     <string name="classroom_day">Сегодня · %1$s</string>
+    <string name="classroom_day_today">Сегодня · %1$s</string>
+    <string name="classroom_day_tomorrow">Завтра · %1$s</string>
+    <string name="classroom_day_yesterday">Вчера · %1$s</string>
+    <string name="classroom_day_other">%1$s</string>
+    <string name="classroom_previous_day">Предыдущий день</string>
+    <string name="classroom_next_day">Следующий день</string>
     <string name="classroom_loading">Загрузка расписания колледжа…</string>
     <string name="classroom_not_found">На сегодня занятий нет</string>
-    <string name="classroom_lesson_count">Сегодня: %1$d</string>
+    <string name="classroom_not_found_day">На этот день занятий нет</string>
+    <string name="classroom_lesson_count">Занятий: %1$d</string>
     <string name="course_number">%1$d курс</string>
 
     <string name="back_button">Назад</string>

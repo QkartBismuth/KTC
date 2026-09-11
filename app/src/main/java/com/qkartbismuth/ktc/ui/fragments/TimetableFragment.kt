@@ -24,6 +24,7 @@ import com.qkartbismuth.ktc.databinding.FragmentTimetableBinding
 import com.qkartbismuth.ktc.ui.adapters.*
 import com.qkartbismuth.ktc.utils.IOFragmentBackPressed
 import com.qkartbismuth.ktc.ui.decoration.SpacingItemDecoration
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -56,6 +57,7 @@ class TimetableFragment : IOFragmentBackPressed() {
     private var classroomIndex: ClassroomIndex? = null
     private var currentTeachers: TeachersList? = null
     private var selectedTeacherTab = 0
+    private var classroomDayOffset = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -110,6 +112,20 @@ class TimetableFragment : IOFragmentBackPressed() {
 
         // Classroom search on the "Кабинеты" teacher tab
         binding.teacherTabs.addOnTabSelectedListener(teacherTabListener)
+
+        // Classroom day navigation
+        binding.classroomPrevDay.setOnClickListener {
+            if (classroomDayOffset > 0) {
+                classroomDayOffset--
+                updateClassroomDay()
+            }
+        }
+        binding.classroomNextDay.setOnClickListener {
+            if (classroomDayOffset < 6) {
+                classroomDayOffset++
+                updateClassroomDay()
+            }
+        }
 
         return binding.root
     }
@@ -512,6 +528,7 @@ class TimetableFragment : IOFragmentBackPressed() {
      */
     private fun showTeacherTabs() {
         classroomIndex = null
+        classroomDayOffset = 0
         binding.teacherTabs.visibility = View.VISIBLE
         binding.teacherTabs.removeOnTabSelectedListener(teacherTabListener)
         binding.teacherTabs.selectTab(binding.teacherTabs.getTabAt(selectedTeacherTab))
@@ -541,8 +558,7 @@ class TimetableFragment : IOFragmentBackPressed() {
             return
         }
         binding.classroomSearch.visibility = View.VISIBLE
-        binding.classroomDay.text = getString(R.string.classroom_day, todayTitle())
-        showClassroomList()
+        updateClassroomDay()
     }
 
     /**
@@ -582,13 +598,16 @@ class TimetableFragment : IOFragmentBackPressed() {
             return
         }
 
-        val day = todayTitle()
+        val day = dayTitleForOffset(classroomDayOffset)
         val sections = index.classrooms(day).map { classroom ->
             ClassroomSection(classroom, index.lessonsFor(classroom, day))
         }
         if (sections.isEmpty()) {
             binding.classroomEmpty.visibility = View.VISIBLE
-            binding.classroomEmpty.text = getString(R.string.classroom_not_found)
+            binding.classroomEmpty.text = getString(
+                if (classroomDayOffset == 0) R.string.classroom_not_found
+                else R.string.classroom_not_found_day
+            )
             binding.timetable.adapter = null
         } else {
             binding.classroomEmpty.visibility = View.GONE
@@ -597,10 +616,41 @@ class TimetableFragment : IOFragmentBackPressed() {
     }
 
     /**
-     * Returns the Russian weekday title used by the API ("Пн".."Вс").
+     * Updates the classroom day label and refreshes the classroom list.
+     * Disables navigation arrows at the boundaries of the current week.
      */
-    private fun todayTitle(): String {
-        val day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+    private fun updateClassroomDay() {
+        if (_binding == null) return
+
+        val dayTitle = dayTitleForOffset(classroomDayOffset)
+        val label = when (classroomDayOffset) {
+            0 -> getString(R.string.classroom_day_today, dayTitle)
+            1 -> getString(R.string.classroom_day_tomorrow, dayTitle)
+            -1 -> getString(R.string.classroom_day_yesterday, dayTitle)
+            else -> getString(R.string.classroom_day_other, dayTitle)
+        }
+        binding.classroomDay.text = label
+
+        val todayCal = Calendar.getInstance()
+        val targetCal = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_MONTH, classroomDayOffset)
+        }
+        val sameWeek = todayCal.get(Calendar.YEAR) == targetCal.get(Calendar.YEAR) &&
+            todayCal.get(Calendar.WEEK_OF_YEAR) == targetCal.get(Calendar.WEEK_OF_YEAR)
+        binding.classroomPrevDay.isEnabled = sameWeek && classroomDayOffset > 0
+        binding.classroomNextDay.isEnabled = sameWeek && classroomDayOffset < 6
+
+        showClassroomList()
+    }
+
+    /**
+     * Returns the Russian weekday title used by the API ("Пн".."Вс")
+     * for the given offset from today.
+     */
+    private fun dayTitleForOffset(offset: Int): String {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.DAY_OF_MONTH, offset)
+        val day = cal.get(Calendar.DAY_OF_WEEK)
         return arrayOf("", "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб")[day]
     }
 
@@ -620,15 +670,41 @@ class TimetableFragment : IOFragmentBackPressed() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.theme_title)
             .setSingleChoiceItems(options, checked) { dialog, which ->
-                Preferences.currentTheme = values[which].also {
-                    preferences.saveTheme()
-                }
+                val newTheme = values[which]
+                val previousTheme = Preferences.currentTheme
+
+                // Assign first and only then persist: saveTheme() writes
+                // Preferences.currentTheme, so calling it before the
+                // assignment would store the previous theme.
+                Preferences.currentTheme = newTheme
+                preferences.saveTheme()
                 dialog.dismiss()
-                requireActivity().recreate()
+
+                val newMode = nightModeFor(newTheme)
+                if (nightModeFor(previousTheme) == newMode) {
+                    // Moving between two themes that share the same DayNight
+                    // mode (e.g. dark <-> OLED) does not trigger recreation
+                    // in setDefaultNightMode, so recreate manually to apply
+                    // the new style.
+                    requireActivity().recreate()
+                } else {
+                    // The mode actually changed: AppCompat recreates the
+                    // activity by itself, avoiding a double recreation.
+                    AppCompatDelegate.setDefaultNightMode(newMode)
+                }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
+
+    /**
+     * Maps a stored theme name to the matching AppCompat night mode.
+     */
+    private fun nightModeFor(theme: String): Int =
+        when (theme) {
+            "dark", "oled" -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
 
     private fun toast(resId: Int) {
         requireActivity().runOnUiThread {
