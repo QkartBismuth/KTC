@@ -26,6 +26,10 @@
     <string name="theme_button">Theme</string>
 
     <string name="add_widget">Timetable</string>
+    <string name="widget_day_off">Day off</string>
+    <string name="widget_no_data">No timetable</string>
+    <string name="widget_no_group">Choose a group in the app</string>
+    <string name="widget_no_teacher">Choose a teacher in the app</string>
     <string name="app_widget_description">The widget displays the schedule for students for today</string>
     <string name="app_widget_teacher_description">The widget displays the schedule for teachers for today</string>
 

@@ -14,8 +14,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Load the selected theme and apply it BEFORE the activity is
-        // created so DayNight resolution sees the right mode.
+        // Load the selected theme and apply the DayNight mode BEFORE
+        // super.onCreate so that the correct resource qualifier is used.
         Preferences(this).load()
         applyNightMode()
         AppDynamicTheme(this).loadTheme()

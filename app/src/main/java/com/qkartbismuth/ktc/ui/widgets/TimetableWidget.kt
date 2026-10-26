@@ -21,6 +21,7 @@ import com.google.gson.JsonSyntaxException
 import okhttp3.Call
 import okhttp3.Response
 import java.lang.Exception
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,7 +37,9 @@ class TimetableWidget : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        preferences = Preferences(context)
+        // The widget may start the process on its own, so the in-memory
+        // preferences (group/teacher/branch) must be read from disk first.
+        preferences = Preferences(context).also { it.load() }
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
@@ -104,48 +107,77 @@ class TimetableWidget : AppWidgetProvider() {
         )
         // Load last group ID
         val groupId = Preferences.group.id
+        if (groupId <= 0) {
+            views.setTextViewText(
+                R.id.timetable_widget_title,
+                context.getString(R.string.widget_no_group)
+            )
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+            return
+        }
+
         val calendar = Calendar.getInstance()
         val weekday = calendar.get(Calendar.DAY_OF_WEEK)
-        val now = "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}"
-
-        val dateFormat = SimpleDateFormat("mm:ss")
+        // Lesson times come from the API as "H:mm", so parse them the same way.
+        val timeFormat = SimpleDateFormat("H:mm", Locale.getDefault())
+        val now = timeFormat.parse(
+            "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}"
+        )?.time
 
         CollegeApi.fetchTimetable(groupId, object : CollegeCallback {
             @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call, response: Response) {
                 // Parse JSON
                 val json = response.body?.string()
-                val timetable: Week
+                val timetable: Week?
                 try {
                     timetable = Gson().fromJson(json, Week::class.java)
                 } catch (e: JsonSyntaxException) {
                     views.setTextViewText(
-                        R.id.timetable_widget_title, "Ошибка расписания"
+                        R.id.timetable_widget_title,
+                        context.getString(R.string.toast_timetable_error)
                     )
                     appWidgetManager.updateAppWidget(appWidgetId, views)
                     return
                 } catch (e: Exception) {
                     views.setTextViewText(
-                        R.id.timetable_widget_title, "Неизвестная ошибка"
+                        R.id.timetable_widget_title,
+                        context.getString(R.string.toast_unknown_error)
                     )
                     appWidgetManager.updateAppWidget(appWidgetId, views)
                     return
                 }
+                if (timetable == null) {
+                    views.setTextViewText(
+                        R.id.timetable_widget_title,
+                        context.getString(R.string.widget_no_data)
+                    )
+                    appWidgetManager.updateAppWidget(appWidgetId, views)
+                    return
+                }
+                // Gson can leave days null when the API returns an empty object.
+                @Suppress("SENSELESS_COMPARISON")
+                val hasDays = timetable.days != null && timetable.days.size > weekday - 2
                 // Get current day timetable
-                val day: Day? = when (weekday) {
-                    1 -> null
-                    2 -> timetable.days[0]
-                    else -> timetable.days[weekday-2]
+                val day: Day? = when {
+                    weekday == 1 -> null
+                    !hasDays -> null
+                    else -> timetable.days[weekday - 2]
                 }
                 if (day == null) {
-                    views.setTextViewText(R.id.timetable_widget_title, "Выходной")
+                    views.setTextViewText(
+                        R.id.timetable_widget_title,
+                        context.getString(R.string.widget_day_off)
+                    )
                     appWidgetManager.updateAppWidget(appWidgetId, views)
                     return
                 }
 
                 // Setup widget
                 views.setTextViewText(R.id.timetable_widget_title, day.title)
-                views.removeAllViews(R.id.timetable_widget_lessons)
+                // removeAllViews is available since API 23 only.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    views.removeAllViews(R.id.timetable_widget_lessons)
 
                 // Setup views
                 var lesson: RemoteViews
@@ -163,16 +195,19 @@ class TimetableWidget : AppWidgetProvider() {
                         setTextViewText(R.id.lesson_teacher, l.teacher)
                     }
 
-                    // check time
-                    val from = dateFormat.parse(l.time[1])?.time!!
-                    val current = dateFormat.parse(now)?.time!!
-                    val to = dateFormat.parse(l.time[2])?.time!!
-                    if (current in from..to)
-                        lesson.setInt(
-                            R.id.lesson_background,
-                            "setBackgroundResource",
-                            R.color.current_lesson
-                        )
+                    // Highlight the lesson that is in progress right now.
+                    try {
+                        val from = timeFormat.parse(l.time[1])?.time
+                        val to = timeFormat.parse(l.time[2])?.time
+                        if (now != null && from != null && to != null && now in from..to)
+                            lesson.setInt(
+                                R.id.lesson_background,
+                                "setBackgroundResource",
+                                R.color.current_lesson
+                            )
+                    } catch (e: ParseException) {
+                        // Malformed time in the API response: skip highlighting.
+                    }
 
                     views.addView(R.id.timetable_widget_lessons, lesson)
                 }

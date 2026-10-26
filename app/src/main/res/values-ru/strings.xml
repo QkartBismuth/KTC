@@ -26,6 +26,10 @@
     <string name="toggle_mode">Переключить режим студент / преподаватель</string>
     <string name="theme_button">Тема</string>
     <string name="add_widget">Расписание</string>
+    <string name="widget_day_off">Выходной</string>
+    <string name="widget_no_data">Нет расписания</string>
+    <string name="widget_no_group">Выберите группу в приложении</string>
+    <string name="widget_no_teacher">Выберите преподавателя в приложении</string>
     <string name="app_widget_description">Виджет отображает расписание для студентов на сегодняшний день</string>
     <string name="app_widget_teacher_description">Виджет отображает расписание для преподавателей на сегодняшний день</string>
     <string name="title_timetable">Расписание</string>

@@ -50,8 +50,26 @@ class TimetableFragment : IOFragmentBackPressed() {
      * Enables auto-refresh of the current week timetable.
      * Disabled while the user is browsing other weeks.
      */
+    @Volatile
     private var autoRefresh = false
     private val refreshHandler = Handler(Looper.getMainLooper())
+
+    /**
+     * Week offset relative to the API's current week.
+     * The API accepts an offset (0 = current week, -1 = previous, 1 = next),
+     * not an absolute week number.
+     */
+    private var weekOffset = 0
+
+    /** Absolute week number currently displayed. */
+    private var displayedWeek = 0
+
+    /** Direction of the last navigation request (0 when not navigating). */
+    private var pendingDelta = 0
+
+    /** Id of the newest timetable request, used to drop stale responses. */
+    @Volatile
+    private var timetableRequestId = 0
 
     // Classroom tab (teacher mode → "Кабинеты")
     private var classroomIndex: ClassroomIndex? = null
@@ -84,14 +102,12 @@ class TimetableFragment : IOFragmentBackPressed() {
 
         // Next week
         binding.next.setOnClickListener {
-            if (Preferences.week < 57)
-                changeWeek(1)
+            changeWeek(1)
         }
 
         // previous week
         binding.previous.setOnClickListener {
-            if (Preferences.week > 1)
-                changeWeek(-1)
+            changeWeek(-1)
         }
 
         // toggle isStudent
@@ -147,12 +163,16 @@ class TimetableFragment : IOFragmentBackPressed() {
      */
     private val autoRefreshTask = object : Runnable {
         override fun run() {
-            when (Preferences.timetableState) {
-                2 -> if (Preferences.isStudent)
-                    fetchTimetable(Preferences.group.id, silent = true)
-                else
-                    fetchTeacherTimetable(Preferences.teacherId, silent = true)
-                else -> Unit
+            // Only refresh while the current week is shown: refreshing while
+            // the user is browsing another week would jump back to today.
+            if (autoRefresh) {
+                when (Preferences.timetableState) {
+                    2 -> if (Preferences.isStudent)
+                        fetchTimetable(Preferences.group.id, silent = true)
+                    else
+                        fetchTeacherTimetable(Preferences.teacherId, silent = true)
+                    else -> Unit
+                }
             }
             refreshHandler.postDelayed(this, TimetableCache.MAX_AGE_MS)
         }
@@ -184,13 +204,16 @@ class TimetableFragment : IOFragmentBackPressed() {
         return true
     }
 
-    private fun changeWeek(i: Int) {
-        // Provides week changing behavior.
+    private fun changeWeek(delta: Int) {
+        // Provides week changing behavior. The offset (not the absolute week
+        // number) is what the API expects, so navigation works in both
+        // directions instead of always jumping to a future week.
         autoRefresh = false
-        Preferences.week += i
+        weekOffset += delta
+        pendingDelta = delta
         binding.next.isEnabled = false
         binding.previous.isEnabled = false
-        fetchTimetable(Preferences.group.id, Preferences.week)
+        fetchTimetable(Preferences.group.id, weekOffset)
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -207,6 +230,9 @@ class TimetableFragment : IOFragmentBackPressed() {
                     fetchTeacherList(Preferences.branch.id)
             // students timetable
             2 -> {
+                weekOffset = 0
+                pendingDelta = 0
+                displayedWeek = 0
                 autoRefresh = true
                 showCachedTimetable(notifyOffline = false)
                 if (Preferences.isStudent)
@@ -334,10 +360,29 @@ class TimetableFragment : IOFragmentBackPressed() {
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     private fun displayStudentTimetable(data: Week): Boolean {
         if (_binding == null) return false
-        with (binding) {
+
+        // The API clamps the week to the semester range, so an unchanged week
+        // number means there are no more weeks in that direction. Undo the
+        // offset so the next press moves in the opposite direction correctly.
+        val moved = data.week_number - displayedWeek
+        if (pendingDelta > 0 && moved <= 0) {
+            weekOffset -= pendingDelta
+            binding.next.isEnabled = false
+            binding.previous.isEnabled = true
+        } else if (pendingDelta < 0 && moved >= 0) {
+            weekOffset -= pendingDelta
+            binding.previous.isEnabled = false
+            binding.next.isEnabled = true
+        } else {
+            binding.next.isEnabled = true
+            binding.previous.isEnabled = true
+        }
+        pendingDelta = 0
+        displayedWeek = data.week_number
+        Preferences.week = data.week_number
+
+        with(binding) {
             back.isEnabled = true
-            next.isEnabled = true
-            previous.isEnabled = true
             timetableTitle.text = "${Preferences.group.title}\n${data.week_number} неделя"
             timetableToolbar.visibility = View.VISIBLE
             branchHeader.visibility = View.GONE
@@ -379,14 +424,26 @@ class TimetableFragment : IOFragmentBackPressed() {
     /**
      * Fetches timetable for specified groupId.
      * @param groupId unique group ID.
-     * @param week by default is current week.
+     * @param offset offset relative to the current week
+     *        (0 = current week, -1 = previous, 1 = next).
+     *        Null fetches the current week.
      * @param silent true for background refresh without failure toasts.
      */
-    fun fetchTimetable(groupId: Int, week: Int? = null, silent: Boolean = false) {
+    fun fetchTimetable(groupId: Int, offset: Int? = null, silent: Boolean = false) {
         Preferences.timetableState = 2
+        if (offset == null) {
+            // A fresh current-week load (group change, mode change or
+            // auto-refresh) always starts navigation from the current week.
+            weekOffset = 0
+            pendingDelta = 0
+        }
+        val requestId = ++timetableRequestId
         CollegeApi.fetchTimetable(groupId, object : CollegeCallback {
             @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
             override fun onResponse(call: Call, response: Response) {
+                // Ignore a response superseded by a newer request.
+                if (requestId != timetableRequestId) return
+
                 // Parse JSON
                 val json = response.body?.string()
                 val data: Week
@@ -400,29 +457,39 @@ class TimetableFragment : IOFragmentBackPressed() {
                     return
                 }
 
-                // Saving the current week so it can be shown offline
-                if (autoRefresh && json != null && data.week_number == Preferences.week) {
+                // Only the current week is saved for offline use: a browsed
+                // week must not replace the saved current timetable.
+                val isCurrentWeek = offset == null || offset == 0
+                if (isCurrentWeek && json != null) {
                     val changed = cache.raw(false) != null && cache.raw(false) != json
                     cache.saveRawTimetable(json)
                     if (changed) toast(R.string.toast_timetable_updated)
                 }
-                Preferences.week = data.week_number
+                autoRefresh = isCurrentWeek
 
-                activity!!.runOnUiThread {
-                    displayStudentTimetable(data)
+                activity?.runOnUiThread {
+                    if (displayStudentTimetable(data)) preferences.saveTimetable()
                 }
-                preferences.saveTimetable()
             }
 
             override fun onFailure(call: Call, e: IOException) {
                 super.onFailure(call, e)
+                if (requestId != timetableRequestId) return
                 if (silent) return
                 activity?.runOnUiThread {
-                    if (showCachedTimetable(notifyOffline = false)) return@runOnUiThread
+                    if (_binding == null) return@runOnUiThread
+                    // Restore the week that was shown before the failed attempt.
+                    weekOffset -= pendingDelta
+                    pendingDelta = 0
+                    binding.next.isEnabled = true
+                    binding.previous.isEnabled = true
+                    // Only fall back to the offline copy when nothing is shown.
+                    if (displayedWeek == 0 && showCachedTimetable(notifyOffline = false))
+                        return@runOnUiThread
                     toast(R.string.toast_unknown_error)
                 }
             }
-        }, week)
+        }, offset)
     }
 
     /**
@@ -432,12 +499,16 @@ class TimetableFragment : IOFragmentBackPressed() {
      */
     fun fetchTeacherTimetable(teacherId: Int = -1, silent: Boolean = false) {
         Preferences.timetableState = 2
+        val requestId = ++timetableRequestId
         CollegeApi.fetchTeacherTimetable(
             Preferences.branch.id,
             if (teacherId < 0) Preferences.teacherId else teacherId,
             object : CollegeCallback {
                 @SuppressLint("SetTextI18n")
                 override fun onResponse(call: Call, response: Response) {
+                    // Ignore a response superseded by a newer request.
+                    if (requestId != timetableRequestId) return
+
                     // Parse JSON
                     val json = response.body?.string()
                     val data: TeacherTimetable
@@ -453,16 +524,15 @@ class TimetableFragment : IOFragmentBackPressed() {
                     if (teacherId >= 0) Preferences.teacherId = teacherId
 
                     // Saving the current teacher timetable so it can be shown offline
-                    if (autoRefresh && json != null) {
+                    if (json != null) {
                         val changed = cache.raw(true) != null && cache.raw(true) != json
                         cache.saveRawTeacherTimetable(json)
                         if (changed) toast(R.string.toast_timetable_updated)
                     }
 
-                    activity!!.runOnUiThread {
-                        displayTeacherTimetable(data)
+                    activity?.runOnUiThread {
+                        if (displayTeacherTimetable(data)) preferences.saveTimetable()
                     }
-                    preferences.saveTimetable()
                 }
 
                 override fun onFailure(call: Call, e: IOException) {

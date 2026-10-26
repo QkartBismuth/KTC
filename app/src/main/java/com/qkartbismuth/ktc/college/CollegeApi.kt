@@ -51,13 +51,15 @@ class CollegeApi {
         /**
          * Fetches the timetable for specified group and week.
          * @param groupId course group ID.
-         * @param week week number. by default fetches current week.
+         * @param weekOffset offset relative to the current week accepted by
+         *        the API (0 = current week, -1 = previous, 1 = next).
+         *        Null fetches the current week.
          */
-        fun fetchTimetable(groupId: Int, callback: CollegeCallback, week: Int? = null) {
-            if (week == null)
+        fun fetchTimetable(groupId: Int, callback: CollegeCallback, weekOffset: Int? = null) {
+            if (weekOffset == null)
                 sendRequest("$TIMETABLE/$groupId", callback)
             else
-                sendRequest("$TIMETABLE/$groupId/$week", callback)
+                sendRequest("$TIMETABLE/$groupId/$weekOffset", callback)
         }
 
         /**

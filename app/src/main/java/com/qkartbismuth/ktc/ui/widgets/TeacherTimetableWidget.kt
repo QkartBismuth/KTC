@@ -35,7 +35,9 @@ class TeacherTimetableWidget : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        preferences = Preferences(context)
+        // The widget may start the process on its own, so the in-memory
+        // preferences (group/teacher/branch) must be read from disk first.
+        preferences = Preferences(context).also { it.load() }
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
@@ -104,6 +106,15 @@ class TeacherTimetableWidget : AppWidgetProvider() {
         // Load last group ID
         val teacherId = Preferences.teacherId
         val branchId = Preferences.branch.id
+        if (teacherId <= 0) {
+            views.setTextViewText(
+                R.id.timetable_widget_title,
+                context.getString(R.string.widget_no_teacher)
+            )
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+            return
+        }
+
         val calendar = Calendar.getInstance()
         val weekday = calendar.get(Calendar.DAY_OF_WEEK)
 
@@ -112,30 +123,46 @@ class TeacherTimetableWidget : AppWidgetProvider() {
             override fun onResponse(call: Call, response: Response) {
                 // Parse JSON
                 val json = response.body?.string()
-                val timetable: TeacherTimetable
+                val timetable: TeacherTimetable?
                 try {
                     timetable = Gson().fromJson(json, TeacherTimetable::class.java)
                 } catch (e: JsonSyntaxException) {
                     views.setTextViewText(
-                        R.id.timetable_widget_title, "Ошибка расписания"
+                        R.id.timetable_widget_title,
+                        context.getString(R.string.toast_timetable_error)
                     )
                     appWidgetManager.updateAppWidget(appWidgetId, views)
                     return
                 } catch (e: Exception) {
                     views.setTextViewText(
-                        R.id.timetable_widget_title, "Неизвестная ошибка"
+                        R.id.timetable_widget_title,
+                        context.getString(R.string.toast_unknown_error)
                     )
                     appWidgetManager.updateAppWidget(appWidgetId, views)
                     return
                 }
+                if (timetable == null) {
+                    views.setTextViewText(
+                        R.id.timetable_widget_title,
+                        context.getString(R.string.widget_no_data)
+                    )
+                    appWidgetManager.updateAppWidget(appWidgetId, views)
+                    return
+                }
+                // Gson can leave week null when the API returns no data.
+                @Suppress("SENSELESS_COMPARISON")
+                val hasWeek = timetable.week != null && timetable.week.size > weekday - 2
                 // Get current day timetable
-                val day: TeacherDay? = when (weekday) {
-                    1 -> null
-                    2 -> timetable.week[0]
-                    else -> timetable.week[weekday-2]
+                val day: TeacherDay? = when {
+                    weekday == 1 -> null
+                    !hasWeek -> null
+                    else -> timetable.week[weekday - 2]
                 }
                 if (day == null) {
-                    views.setTextViewText(R.id.timetable_widget_title, "Выходной")
+                    views.setTextViewText(
+                        R.id.timetable_widget_title,
+                        context.getString(R.string.widget_day_off)
+                    )
                     appWidgetManager.updateAppWidget(appWidgetId, views)
                     return
                 }
@@ -144,7 +171,9 @@ class TeacherTimetableWidget : AppWidgetProvider() {
                 views.setTextViewText(
                     R.id.timetable_widget_title, "${timetable.teacher} - ${day.title}"
                 )
-                views.removeAllViews(R.id.timetable_widget_lessons)
+                // removeAllViews is available since API 23 only.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    views.removeAllViews(R.id.timetable_widget_lessons)
 
                 // Setup views
                 var lesson: RemoteViews
